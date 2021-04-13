@@ -39,7 +39,7 @@ public class LojinhaApplication implements CommandLineRunner{
 		
 		p1.getCategorias().addAll(Arrays.asList(cat1));
 		p2.getCategorias().addAll(Arrays.asList(cat1, cat2));
-		p2.getCategorias().addAll(Arrays.asList(cat1));
+		p3.getCategorias().addAll(Arrays.asList(cat1));
 		
 		dao.saveAll(Arrays.asList(cat1, cat2));
 		pdao.saveAll(Arrays.asList(p1, p2, p3));
