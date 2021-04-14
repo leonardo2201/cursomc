@@ -1,5 +1,6 @@
 package com.leonardo.lojinha;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,22 @@ import com.leonardo.lojinha.entity.Cidade;
 import com.leonardo.lojinha.entity.Cliente;
 import com.leonardo.lojinha.entity.Endereco;
 import com.leonardo.lojinha.entity.Estado;
+import com.leonardo.lojinha.entity.ItemPedido;
+import com.leonardo.lojinha.entity.Pagamento;
+import com.leonardo.lojinha.entity.PagamentoComBoleto;
+import com.leonardo.lojinha.entity.PagamentoComCartao;
+import com.leonardo.lojinha.entity.Pedido;
 import com.leonardo.lojinha.entity.Produto;
+import com.leonardo.lojinha.entity.enums.EstadoPagamento;
 import com.leonardo.lojinha.entity.enums.TipoCliente;
 import com.leonardo.lojinha.repositories.CategoriaDAO;
 import com.leonardo.lojinha.repositories.CidadeDAO;
 import com.leonardo.lojinha.repositories.ClienteDAO;
 import com.leonardo.lojinha.repositories.EnderecoDAO;
 import com.leonardo.lojinha.repositories.EstadoDAO;
+import com.leonardo.lojinha.repositories.ItemPedidoDAO;
+import com.leonardo.lojinha.repositories.PagamentoDAO;
+import com.leonardo.lojinha.repositories.PedidoDAO;
 import com.leonardo.lojinha.repositories.ProdutoDAO;
 
 @SpringBootApplication
@@ -41,6 +51,15 @@ public class LojinhaApplication implements CommandLineRunner{
 	
 	@Autowired
 	private EnderecoDAO eDao;
+	
+	@Autowired
+	private PedidoDAO pedDao;
+	
+	@Autowired
+	private PagamentoDAO pagDao;
+	
+	@Autowired
+	private ItemPedidoDAO itemPedidoDao;
 
 	public static void main(String[] args) {
 		SpringApplication.run(LojinhaApplication.class, args);
@@ -89,6 +108,34 @@ public class LojinhaApplication implements CommandLineRunner{
 		cliDao.saveAll(Arrays.asList(cli1));
 		eDao.saveAll(Arrays.asList(e1, e2));
 		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyy HH:mm");
+		
+		Pedido ped1 = new Pedido(null, sdf.parse("30/09/2017 10:32"), cli1, e1);
+		Pedido ped2 = new Pedido(null, sdf.parse("10/10/2017 19:35"), cli1, e2);
+		
+		Pagamento pagto1 = new PagamentoComCartao(null, EstadoPagamento.QUITADO, ped1, 6);
+		ped1.setPagamento(pagto1);
+		
+		Pagamento pagto2 = new PagamentoComBoleto(null, EstadoPagamento.PENDENTE, ped2, sdf.parse("20/10/2017 00:00"), null );
+		ped2.setPagamento(pagto2);
+		
+		cli1.getPedidos().addAll(Arrays.asList(ped1, ped2));
+		
+		pedDao.saveAll(Arrays.asList(ped1, ped2));
+		pagDao.saveAll(Arrays.asList(pagto1, pagto2));
+		
+		ItemPedido ip1 = new ItemPedido(ped1, p1, 0.00, 1, 2000.00);
+		ItemPedido ip2 = new ItemPedido(ped1, p3, 0.00, 2, 80.00);
+		ItemPedido ip3 = new ItemPedido(ped2, p2, 100.00, 1, 800.00);
+		
+		ped1.getItens().addAll(Arrays.asList(ip1, ip2));
+		ped2.getItens().addAll(Arrays.asList(ip3));
+		
+		p1.getItens().addAll(Arrays.asList(ip1));
+		p2.getItens().addAll(Arrays.asList(ip3));
+		p3.getItens().addAll(Arrays.asList(ip2));
+		
+		itemPedidoDao.saveAll(Arrays.asList(ip1, ip2, ip3));
 		
 	}
 
