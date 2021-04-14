@@ -9,10 +9,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.leonardo.lojinha.entity.Categoria;
 import com.leonardo.lojinha.entity.Cidade;
+import com.leonardo.lojinha.entity.Cliente;
+import com.leonardo.lojinha.entity.Endereco;
 import com.leonardo.lojinha.entity.Estado;
 import com.leonardo.lojinha.entity.Produto;
+import com.leonardo.lojinha.entity.enums.TipoCliente;
 import com.leonardo.lojinha.repositories.CategoriaDAO;
 import com.leonardo.lojinha.repositories.CidadeDAO;
+import com.leonardo.lojinha.repositories.ClienteDAO;
+import com.leonardo.lojinha.repositories.EnderecoDAO;
 import com.leonardo.lojinha.repositories.EstadoDAO;
 import com.leonardo.lojinha.repositories.ProdutoDAO;
 
@@ -30,6 +35,12 @@ public class LojinhaApplication implements CommandLineRunner{
 	
 	@Autowired
 	private EstadoDAO edao;
+	
+	@Autowired
+	private ClienteDAO cliDao;
+	
+	@Autowired
+	private EnderecoDAO eDao;
 
 	public static void main(String[] args) {
 		SpringApplication.run(LojinhaApplication.class, args);
@@ -66,6 +77,18 @@ public class LojinhaApplication implements CommandLineRunner{
 		
 		edao.saveAll(Arrays.asList(est1, est2));
 		cdao.saveAll(Arrays.asList(c1, c2, c3));
+		
+		Cliente cli1 = new Cliente(null, "Maria Silva", "maria@gmail.com", "123456789", TipoCliente.PESSOAFISICA);
+		cli1.getTelefones().addAll(Arrays.asList("997749254", "988010828"));
+		
+		Endereco e1 = new Endereco(null, "Rua Flores", "300", "Apto 303", "Jardim", "38220534", cli1, c1);
+		Endereco e2 = new Endereco(null, "Avenida Matos", "105", "Sala 1", "Centro", "1111111", cli1, c2);
+		
+		cli1.getEndereco().addAll(Arrays.asList(e1, e2));
+		
+		cliDao.saveAll(Arrays.asList(cli1));
+		eDao.saveAll(Arrays.asList(e1, e2));
+		
 		
 	}
 
