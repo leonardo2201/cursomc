@@ -1,12 +1,15 @@
 package com.leonardo.lojinha.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.leonardo.lojinha.entity.Categoria;
 import com.leonardo.lojinha.repositories.CategoriaDAO;
+import com.leonardo.lojinha.services.exceptions.DataIntegrityException;
 import com.leonardo.lojinha.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -33,5 +36,19 @@ public class CategoriaService {
 	public Categoria update(Categoria obj) {
 		findById(obj.getId());
 		return categoriaDAO.save(obj);
+	}
+
+	public void delete(Integer id) {
+		findById(id);
+		try {
+			categoriaDAO.deleteById(id);
+		}
+		catch(DataIntegrityViolationException e) {
+			throw new DataIntegrityException("Não é possivel excluir uma categoria que ainda tem produtos");
+		}
+	}
+
+	public List<Categoria> findAll() {
+		return categoriaDAO.findAll();
 	}
 }
