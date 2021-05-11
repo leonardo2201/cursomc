@@ -5,8 +5,12 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+import com.leonardo.lojinha.dto.CategoriaDTO;
 import com.leonardo.lojinha.entity.Categoria;
 import com.leonardo.lojinha.repositories.CategoriaDAO;
 import com.leonardo.lojinha.services.exceptions.DataIntegrityException;
@@ -18,10 +22,11 @@ public class CategoriaService {
 	@Autowired
 	private CategoriaDAO categoriaDAO;
 
-	public Optional<Categoria> findById(Integer id) {
-		Optional<Categoria> categoria = categoriaDAO.findById(id);
+	public Categoria findById(Integer id) {
+		Optional<Categoria> categoriaOpt = categoriaDAO.findById(id);
+		Categoria categoria = categoriaOpt.get();
 		
-		if(categoria.isEmpty()) {
+		if(categoriaOpt.isEmpty()) {
 			throw new ObjectNotFoundException("Objeto não encontrado! id: " + id + ", Tipo: " + Categoria.class.getName());
 		}
 		return categoria;
@@ -34,8 +39,13 @@ public class CategoriaService {
 	}
 
 	public Categoria update(Categoria obj) {
-		findById(obj.getId());
-		return categoriaDAO.save(obj);
+		Categoria newObj = findById(obj.getId());
+		updateData(newObj, obj);
+		return categoriaDAO.save(newObj);
+	}
+	
+	private void updateData(Categoria newObj, Categoria obj) {
+		newObj.setNome(obj.getNome());
 	}
 
 	public void delete(Integer id) {
@@ -50,5 +60,15 @@ public class CategoriaService {
 
 	public List<Categoria> findAll() {
 		return categoriaDAO.findAll();
+	}
+	
+	public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+		PageRequest pageRequest = PageRequest.of(page, linesPerPage, Direction.valueOf(direction), orderBy);
+		return categoriaDAO.findAll(pageRequest);
+		
+	}
+	
+	public Categoria fromDTO(CategoriaDTO objDto) {
+		return new Categoria(objDto.getId(), objDto.getNome());
 	}
 }
