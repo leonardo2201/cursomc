@@ -15,13 +15,13 @@ import com.leonardo.lojinha.repositories.ClienteDAO;
 import com.leonardo.lojinha.resources.exception.FieldMessage;
 import com.leonardo.lojinha.services.validation.utils.BR;
 
-public class ClientInsertValidator implements ConstraintValidator<ClientInsert, ClienteNewDTO> {
+public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert, ClienteNewDTO> {
 	
 	@Autowired
 	private ClienteDAO repo;
 	
 	@Override
-	public void initialize(ClientInsert ann) {
+	public void initialize(ClienteInsert ann) {
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class ClientInsertValidator implements ConstraintValidator<ClientInsert, 
 		
 		Cliente aux = repo.findByEmail(objDto.getEmail());
 		if(aux != null) {
-			list.add(new FieldMessage("email", "E-mail ja existe!"));
+			list.add(new FieldMessage("email", "E-mail já existe!"));
 		}
 		
 		for (FieldMessage e : list) {
