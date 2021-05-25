@@ -33,11 +33,13 @@ public class ClienteService {
 
 	public Cliente findById(Integer id) {
 		Optional<Cliente> clienteOpt = clienteDAO.findById(id);
-		Cliente cliente = clienteOpt.get();
+		Cliente cliente = null;
 		
 		if(clienteOpt.isEmpty()) {
 			throw new ObjectNotFoundException("Objeto não encontrado! id: " + id + ", Tipo: " + Cliente.class.getName());
 		}
+		
+		cliente = clienteOpt.get();
 		return cliente;
 	}
 	
